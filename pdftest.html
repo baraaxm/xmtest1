@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Get Your Free Guide</title>
+</head>
+<body>
+  <h2>Get Your Free PDF Guide on WhatsApp</h2>
+  <form id="lead-form">
+    <label for="phone">Enter your WhatsApp number:</label><br>
+    <input type="tel" id="phone" name="phone" required placeholder="+9665XXXXXXXX"><br><br>
+    <button type="submit">Send Me the Guide</button>
+  </form>
+
+  <p id="status"></p>
+
+  <script>
+    document.getElementById('lead-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const phone = document.getElementById('phone').value;
+      const response = await fetch('https://YOUR-N8N-INSTANCE-URL/webhook/send-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone_number: phone })
+      });
+
+      const result = await response.text();
+      document.getElementById('status').innerText = "Thanks! You'll receive the PDF shortly.";
+    });
+  </script>
+</body>
+</html>
