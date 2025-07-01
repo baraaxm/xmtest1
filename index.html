@@ -52,6 +52,13 @@
       color: #aaa;
     }
 
+    .note {
+      font-size: 0.85rem;
+      color: #bbb;
+      margin-top: -0.8rem;
+      margin-bottom: 1.5rem;
+    }
+
     button {
       width: 100%;
       padding: 0.75rem;
@@ -69,9 +76,17 @@
     }
 
     #status {
-      margin-top: 1rem;
+      margin-top: 1.5rem;
       text-align: center;
+      font-size: 0.95rem;
+    }
+
+    .success {
       color: #4caf50;
+    }
+
+    .error {
+      color: #f44336;
     }
   </style>
 </head>
@@ -85,6 +100,7 @@
 
     <label for="phone">WhatsApp Number</label>
     <input type="tel" id="phone" name="phone" required placeholder="05XXXXXXXX">
+    <div class="note">We will send the guide via WhatsApp to this number.</div>
 
     <label for="guide">Select Your Guide</label>
     <select id="guide" name="guide" required>
@@ -107,18 +123,31 @@
     const phone = document.getElementById('phone').value.trim();
     const guide = document.getElementById('guide').value;
 
-    const response = await fetch("https://YOUR-N8N-URL/webhook/send-pdf-template", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        user_name: name,
-        phone_number: phone,
-        guide_slug: guide
-      })
-    });
+    const statusElement = document.getElementById('status');
+    statusElement.textContent = '';
+    statusElement.className = '';
 
-    const result = await response.text();
-    document.getElementById('status').innerText = "✅ Thanks! You'll receive your guide shortly via WhatsApp.";
+    try {
+      const response = await fetch("https://YOUR-N8N-URL/webhook/send-pdf-template", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_name: name,
+          phone_number: phone,
+          guide_slug: guide
+        })
+      });
+
+      if (response.ok) {
+        statusElement.textContent = "✅ Thank you! You'll receive the guide shortly on WhatsApp.";
+        statusElement.className = "success";
+      } else {
+        throw new Error();
+      }
+    } catch (error) {
+      statusElement.textContent = "❌ There was a problem sending your request. Please try again.";
+      statusElement.className = "error";
+    }
   });
 </script>
 
